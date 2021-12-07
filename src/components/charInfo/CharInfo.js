@@ -1,61 +1,97 @@
-import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
+import { Component } from "react";
+import "./charInfo.scss";
+import { MarvelServices } from "../../services/MarvelService.js";
+import ErrorMsg from "../errorMsg/ErrorMsg";
+import Spinner from "../spinner/Spinner";
+import Skeleton from "../skeleton/Skeleton";
 
-const CharInfo = () => {
+class CharInfo extends Component {
+  state = {
+    loading: false,
+    error: false,
+    char: null,
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.selectedChar !== this.props.selectedChar) {
+      this.onUpdateCharId(this.props.selectedChar);
+      // console.log(this.props.selectedChar);
+    }
+  }
+
+  onUpdateCharId = (id) => {
+    this.setState((state) => ({ ...state, loading: true, error: false }));
+    new MarvelServices()
+      .getCharacter(id)
+      .then((char) =>
+        this.setState((state) => ({ ...state, char, loading: false }))
+      )
+      .catch((err) =>
+        this.setState((state) => ({ ...state, error: true, loading: false }))
+      );
+      
+    // для виклику помилки в компоненті
+    //this.foo.to();
+  };
+
+  render() {
+    const { loading, error, char } = this.state;
+
+    const sceleton = loading || error || char ? null : <Skeleton></Skeleton>;
+    const loadingComp = loading ? <Spinner></Spinner> : null;
+    const errorComp = error ? <ErrorMsg></ErrorMsg> : null;
+    const charCom =
+      char && !loading && !error ? <View char={char}></View> : null;
+
     return (
-        <div className="char__info">
-            <div className="char__basics">
-                <img src={thor} alt="abyss"/>
-                <div>
-                    <div className="char__info-name">thor</div>
-                    <div className="char__btns">
-                        <a href="#" className="button button__main">
-                            <div className="inner">homepage</div>
-                        </a>
-                        <a href="#" className="button button__secondary">
-                            <div className="inner">Wiki</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div className="char__descr">
-                In Norse mythology, Loki is a god or jötunn (or both). Loki is the son of Fárbauti and Laufey, and the brother of Helblindi and Býleistr. By the jötunn Angrboða, Loki is the father of Hel, the wolf Fenrir, and the world serpent Jörmungandr. By Sigyn, Loki is the father of Nari and/or Narfi and with the stallion Svaðilfari as the father, Loki gave birth—in the form of a mare—to the eight-legged horse Sleipnir. In addition, Loki is referred to as the father of Váli in the Prose Edda.
-            </div>
-            <div className="char__comics">Comics:</div>
-            <ul className="char__comics-list">
-                <li className="char__comics-item">
-                    All-Winners Squad: Band of Heroes (2011) #3
-                </li>
-                <li className="char__comics-item">
-                    Alpha Flight (1983) #50
-                </li>
-                <li className="char__comics-item">
-                    Amazing Spider-Man (1999) #503
-                </li>
-                <li className="char__comics-item">
-                    Amazing Spider-Man (1999) #504
-                </li>
-                <li className="char__comics-item">
-                    AMAZING SPIDER-MAN VOL. 7: BOOK OF EZEKIEL TPB (Trade Paperback)
-                </li>
-                <li className="char__comics-item">
-                    Amazing-Spider-Man: Worldwide Vol. 8 (Trade Paperback)
-                </li>
-                <li className="char__comics-item">
-                    Asgardians Of The Galaxy Vol. 2: War Of The Realms (Trade Paperback)
-                </li>
-                <li className="char__comics-item">
-                    Vengeance (2011) #4
-                </li>
-                <li className="char__comics-item">
-                    Avengers (1963) #1
-                </li>
-                <li className="char__comics-item">
-                    Avengers (1996) #1
-                </li>
-            </ul>
-        </div>
-    )
+      <div className="char__info">
+        {sceleton}
+        {loadingComp}
+        {errorComp}
+        {charCom}
+      </div>
+    );
+  }
 }
+
+const View = ({ char }) => {
+  const { description, homepage, name, thumbnail, wiki, comics } = char;
+  const imgNotFound =
+    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
+  return (
+    <>
+      <div className="char__basics">
+        <img
+          src={thumbnail}
+          alt={name}
+          style={imgNotFound ? { objectPosition: "left" } : null}
+        />
+        <div>
+          <div className="char__info-name">{name}</div>
+          <div className="char__btns">
+            <a href={homepage} className="button button__main">
+              <div className="inner">homepage</div>
+            </a>
+            <a href={wiki} className="button button__secondary">
+              <div className="inner">Wiki</div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="char__descr">{description}</div>
+      <div className="char__comics">Comics:</div>
+      <ul className="char__comics-list">
+        {comics.length === 0 ? "немає коміксів" : null}
+        {comics.slice(0, 5).map((comicsItem, i) => {
+          return (
+            <li className="char__comics-item" key={i}>
+              {comicsItem.name}
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
+};
 
 export default CharInfo;
