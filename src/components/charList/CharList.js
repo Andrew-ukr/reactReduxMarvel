@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import "./charList.scss";
 import { MarvelServices } from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
@@ -13,19 +13,6 @@ const CharList = (props) => {
   const [offset, setOffset] = useState(219);
   const [endOfList, setEndOfList] = useState(false);
 
-  // state = {
-  //   list: [],
-  //   loading: true,
-  //   error: false,
-  //   loadMoreLoading: false,
-  //   offset: 1550,
-  //   endOfList: false,
-  // };
-
-  // const componentDidMount = ()=> {
-  //   this.initCharList();
-  // }
-
   useEffect(() => {
     initCharList();
   }, []);
@@ -37,17 +24,11 @@ const CharList = (props) => {
     setList((list) => [...list, ...newList]);
     setLoading(false);
     setLoadMoreLoading(false);
-    // this.setState(({ list }) => ({
-    //   list: [...list, ...newList],
-    //   loading: false,
-    //   loadMoreLoading: false,
-    // }));
   };
 
   const onError = () => {
     setLoading(false);
     setError(true);
-    // this.setState({ loading: false, error: true });
   };
 
   const initCharList = (offset) => {
@@ -59,15 +40,10 @@ const CharList = (props) => {
 
   const incOffset = () => {
     setOffset((offset) => offset + 9);
-    // this.setState((state) => ({ ...state, offset: state.offset + 9 }));
   };
 
   const loadingMoreItems = () => {
     setLoadMoreLoading((loadMoreLoading) => !loadMoreLoading);
-    // this.setState((state) => ({
-    //   ...state,
-    //   loadMoreLoading: !state.loadMoreLoading,
-    // }));
   };
 
   const onLoadMore = () => {
@@ -75,8 +51,6 @@ const CharList = (props) => {
     initCharList(offset);
     incOffset();
   };
-
-  // const { loading, error, list } = this.state;
 
   return (
     <div className="char__list">
@@ -112,14 +86,12 @@ const CharListItem = ({
   onCharSelected,
   selectedChar,
 }) => {
-  // let ref = React.useRef();
   const imgNotFound =
     "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
 
   return (
     <li
       tabIndex="0"
-      // ref={ref}
       key={id}
       className={`char__item`}
       onClick={(e) => {

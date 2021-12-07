@@ -13,7 +13,7 @@ class App extends Component {
 
   onCharSelected = (id) => {
     // this.setState({ selectedChar: id });
-    console.log(id);
+    // console.log(id);
     this.setState({ selectedChar: id });
   };
 
