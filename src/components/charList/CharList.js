@@ -97,13 +97,9 @@ const CharListItem = ({
   selectedChar,
 }) => {
   const [activeItem, setActiveItem] = React.useState("");
-  const ref = React.useRef();
+  let ref = React.useRef();
   const imgNotFound =
     "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
-
-  React.useEffect(() => {
-    selectedChar === id ? setActiveItem("selected") : setActiveItem("");
-  }, [selectedChar, id]);
 
   return (
     <li
