@@ -1,17 +1,16 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import "./charList.scss";
-import { MarvelServices } from "../../services/MarvelService";
+import { useMarvelServices } from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMsg from "../errorMsg/ErrorMsg";
 import PropTypes from "prop-types";
 
 const CharList = (props) => {
   const [list, setList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-  const [offset, setOffset] = useState(219);
+  const [offset, setOffset] = useState(1550); // 219
   const [endOfList, setEndOfList] = useState(false);
+
+  const { loading, error, getAllCharacters } = useMarvelServices();
 
   useEffect(() => {
     initCharList();
@@ -22,42 +21,26 @@ const CharList = (props) => {
       setEndOfList(true);
     }
     setList((list) => [...list, ...newList]);
-    setLoading(false);
-    setLoadMoreLoading(false);
-  };
-
-  const onError = () => {
-    setLoading(false);
-    setError(true);
   };
 
   const initCharList = (offset) => {
-    new MarvelServices()
-      .getAllCharacters(offset)
-      .then(onCharLoaded)
-      .catch(onError);
+    getAllCharacters(offset).then(onCharLoaded);
   };
 
   const incOffset = () => {
     setOffset((offset) => offset + 9);
   };
 
-  const loadingMoreItems = () => {
-    setLoadMoreLoading((loadMoreLoading) => !loadMoreLoading);
-  };
-
   const onLoadMore = () => {
-    loadingMoreItems();
     initCharList(offset);
     incOffset();
   };
 
   return (
     <div className="char__list">
-      {loading ? <Spinner /> : null}
       {error ? <ErrorMsg /> : null}
       <ul className="char__grid">
-        {list.map((listItem, i) => (
+        {list.map((listItem) => (
           <CharListItem
             key={listItem.id}
             {...listItem}
@@ -66,12 +49,12 @@ const CharList = (props) => {
           ></CharListItem>
         ))}
       </ul>
-      {loadMoreLoading ? <Spinner /> : null}
+      {loading ? <Spinner /> : null}
       <button
         style={endOfList ? { display: "none" } : null}
         className="button button__main button__long"
         onClick={onLoadMore}
-        disabled={loadMoreLoading}
+        disabled={loading}
       >
         <div className="inner">load more</div>
       </button>
@@ -79,13 +62,7 @@ const CharList = (props) => {
   );
 };
 
-const CharListItem = ({
-  id,
-  thumbnail,
-  name,
-  onCharSelected,
-  selectedChar,
-}) => {
+const CharListItem = ({ id, thumbnail, name, onCharSelected }) => {
   const imgNotFound =
     "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
 

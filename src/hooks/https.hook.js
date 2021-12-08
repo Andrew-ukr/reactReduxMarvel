@@ -11,7 +11,7 @@ const useHttps = () => {
     try {
       const res = await fetch(url);
       if (!res.ok) {
-        throw new Error("Error ");
+        throw new Error("Error Halepaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       }
       const {data} = await res.json();
       setLoading(false);
@@ -23,7 +23,7 @@ const useHttps = () => {
     }
   }, []);
 
-  return [loading, error, request];
+  return {loading, error, request};
 };
 
 export default useHttps;

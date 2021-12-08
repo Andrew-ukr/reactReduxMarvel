@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import "./charInfo.scss";
-import { MarvelServices } from "../../services/MarvelService.js";
+import { useMarvelServices } from "../../services/MarvelService.js";
 import ErrorMsg from "../errorMsg/ErrorMsg";
 import Spinner from "../spinner/Spinner";
 import Skeleton from "../skeleton/Skeleton";
 
 const CharInfo = (props) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [char, setChar] = useState(null);
+  const { loading, error, getCharacter } = useMarvelServices();
 
   useEffect(() => {
     if (props.selectedChar) {
@@ -17,24 +16,9 @@ const CharInfo = (props) => {
   }, [props.selectedChar]);
 
   const onUpdateCharId = (id) => {
-    setLoading(true);
-    setError(false);
-
-    new MarvelServices()
-      .getCharacter(id)
-      .then(
-        (char) => {
-          setChar(char);
-          setLoading(false);
-        }
-      )
-      .catch(
-        (err) => {
-          setLoading(false);
-          setError(true);
-        }
-      );
+    getCharacter(id).then(setChar);
   };
+
   const sceleton = loading || error || char ? null : <Skeleton></Skeleton>;
   const loadingComp = loading ? <Spinner></Spinner> : null;
   const errorComp = error ? <ErrorMsg></ErrorMsg> : null;
@@ -54,6 +38,7 @@ const View = ({ char }) => {
   const { description, homepage, name, thumbnail, wiki, comics } = char;
   const imgNotFound =
     "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
+
   return (
     <>
       <div className="char__basics">

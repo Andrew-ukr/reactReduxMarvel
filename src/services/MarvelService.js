@@ -1,35 +1,31 @@
 import useHttps from "../hooks/https.hook";
 
-const useMarvelServices = () => {
+export const useMarvelServices = () => {
   const { loading, error, request: getResource } = useHttps();
-
   const _urlBase = "https://gateway.marvel.com:443/v1/public/";
   const _apiKey = "apikey=fe959d891425e7dd4c109cfacc598d46";
   const _baseOffset = 210;
+  let totalNumber = null;
 
-  // getResource = async (url) => {
-  //   try {
-  //     const res = await fetch(url);
-  //     if (!res.ok) {
-  //       throw new Error("Halepa !!!!!!!!!!!!!!");
-  //     }
-  //     const { data } = await res.json();
-  //     return data;
-  //   } catch {
-  //     throw new Error("Halepa !!!!!!!!!!!!!!");
-  //   }
-  // };
-
-  const getAllCharacters = (offset = _baseOffset) => {
+  const getAllCharacters = (
+    offset = _baseOffset,
+    characters = "characters",
+    limit = 9,
+    cb
+  ) => {
     return getResource(
-      `${_urlBase}characters?limit=9&offset=${offset}&${_apiKey}`
-    ).then((res) => res.results.map(_transformCharacter));
+      `${_urlBase}${characters}?limit=${limit}&offset=${offset}&${_apiKey}`
+    ).then((res) => {
+      return res.results.map(
+        cb === undefined ? _transformCharacter : _transformComics
+      );
+    });
   };
 
   const getCharacter = async (id) => {
-    return await getResource(
-      `${_urlBase}characters/${id}?${_apiKey}`
-    ).then((res) => _transformCharacter(res.results[0]));
+    return await getResource(`${_urlBase}characters/${id}?${_apiKey}`).then(
+      (res) => _transformCharacter(res.results[0])
+    );
   };
 
   const _transformCharacter = (data) => {
@@ -48,7 +44,20 @@ const useMarvelServices = () => {
     };
   };
 
-  return { loading, error, getAllCharacters, getCharacter };
-}
+  const _transformComics = (data) => {
+    return {
+      id: data.id,
+      title: data.title,
+      description: !data.description
+        ? "Немає опису"
+        : data.description.length < 150
+        ? data.description.slice(0, 150)
+        : `${data.description.slice(0, 145)} ...`,
+      thumbnail: data.thumbnail.path + "." + data.thumbnail.extension,
+      resourceURI: data.resourceURI,
+      price: data.prices[0].price,
+    };
+  };
 
-export default useMarvelServices;
+  return { loading, error, getAllCharacters, getCharacter, totalNumber };
+};
