@@ -11,7 +11,7 @@ function HomePage() {
   const onCharSelected = (id) => {
     setSelectedChar(id);
   };
-  
+
   return (
     <>
       <ErrorBoundary>
