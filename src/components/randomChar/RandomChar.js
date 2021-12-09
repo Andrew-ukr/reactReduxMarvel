@@ -11,6 +11,7 @@ const RandomChar = () => {
 
   useEffect(() => {
     updateRndmChar();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onCharLoaded = (char) => {

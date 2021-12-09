@@ -1,21 +1,18 @@
 import "./comicsList.scss";
-import uw from "../../resources/img/UW.png";
-import xMen from "../../resources/img/x-men.png";
 import { useMarvelServices } from "../../services/MarvelService";
 import { useState, useEffect } from "react";
 import Spinner from "../spinner/Spinner";
 import ErrorMsg from "../errorMsg/ErrorMsg";
-
+import { Link, useLocation } from "react-router-dom";
 
 const ComicsList = () => {
-  const { loading, error, getAllCharacters, totalNumber } =
-    useMarvelServices();
-
+  const { loading, error, getAllCharacters } = useMarvelServices();
   const [comicsList, setComicsList] = useState([]);
-
   const [showBtn, setShowBtn] = useState(true);
+
   useEffect(() => {
     getNewComics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getNewComics = () => {
@@ -33,8 +30,8 @@ const ComicsList = () => {
     <div className="comics__list">
       {error && <ErrorMsg></ErrorMsg>}
       <ul className="comics__grid">
-        {comicsList.map(({ id, ...rest }) => {
-          return <ComicsListItem key={id} comicsList={rest} />;
+        {comicsList.map((el) => {
+          return <ComicsListItem key={el.id} comicsList={el} />;
         })}
       </ul>
       {loading && <Spinner></Spinner>}
@@ -51,16 +48,18 @@ const ComicsList = () => {
 };
 
 const ComicsListItem = ({ comicsList }) => {
-  const { description, title, id, thumbnail, resourceURI, price } = comicsList;
+  const { pathname } = useLocation();
+
+  const { title, thumbnail, price, id } = comicsList;
   return (
     <li className="comics__item">
-      <a href={resourceURI}>
+      <Link to={`${pathname}/${id}`}>
         <img src={thumbnail} alt={title} className="comics__item-img" />
         <div className="comics__item-name">{title}</div>
         <div className="comics__item-price">
           {price ? price + "$" : "NOT AVAILABLE"}
         </div>
-      </a>
+      </Link>
     </li>
   );
 };

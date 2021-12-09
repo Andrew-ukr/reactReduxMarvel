@@ -13,6 +13,7 @@ const CharInfo = (props) => {
     if (props.selectedChar) {
       onUpdateCharId(props.selectedChar);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.selectedChar]);
 
   const onUpdateCharId = (id) => {
@@ -62,7 +63,7 @@ const View = ({ char }) => {
       <div className="char__descr">{description}</div>
       <div className="char__comics">Comics:</div>
       <ul className="char__comics-list">
-        {comics.length === 0 ? "немає коміксів" : null}
+        {comics.length === 0 ? "No comics" : null}
         {comics.slice(0, 5).map((comicsItem, i) => {
           return (
             <li className="char__comics-item" key={i}>

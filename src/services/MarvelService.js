@@ -22,9 +22,12 @@ export const useMarvelServices = () => {
     });
   };
 
-  const getCharacter = async (id) => {
-    return await getResource(`${_urlBase}characters/${id}?${_apiKey}`).then(
-      (res) => _transformCharacter(res.results[0])
+  const getCharacter = async (id, characters = "characters" , cb) => {
+    return await getResource(`${_urlBase}${characters}/${id}?${_apiKey}`).then(
+      (res) =>
+        (cb === undefined ? _transformCharacter : _transformComics)(
+          res.results[0]
+        )
     );
   };
 
@@ -54,8 +57,10 @@ export const useMarvelServices = () => {
         ? data.description.slice(0, 150)
         : `${data.description.slice(0, 145)} ...`,
       thumbnail: data.thumbnail.path + "." + data.thumbnail.extension,
-      resourceURI: data.resourceURI,
       price: data.prices[0].price,
+      details: data.textObjects[0]?.text || "No descriptions",
+      languge: data.textObjects[0]?.languge || "unknown",
+      pages: data.pageCount || "unknown",
     };
   };
 
